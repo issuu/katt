@@ -92,7 +92,8 @@ parse(_Hdrs, null, _Params, _Callbacks) ->
 parse(Hdrs, Body, _Params, _Callbacks) ->
   ContentType = proplists:get_value("Content-Type", Hdrs, ""),
   case is_json_content_type(ContentType) of
-    true  -> parse_json(Body);
+    true when byte_size(Body) == 0 -> katt_util:from_utf8(Body);
+    true  when byte_size(Body) > 0 -> parse_json(Body);
     false -> katt_util:from_utf8(Body)
   end.
 
