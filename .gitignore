@@ -10,3 +10,4 @@
 .eunit
 deps/
 .deps_plt
+/.rebar
