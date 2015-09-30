@@ -35,7 +35,7 @@ parse(Input) when is_binary(Input) ->
   release_memo(), Result.
 
 'api'(Input, Index) ->
-  p(Input, Index, 'api', fun(I,D) -> (p_seq([p_zero_or_more(fun 'empty_line'/2), p_label('name', fun 'api_name'/2), p_zero_or_more(fun 'empty_line'/2), p_label('description', p_optional(fun 'api_description'/2)), p_zero_or_more(fun 'empty_line'/2), p_label('transactions', fun 'transactions'/2), p_zero_or_more(fun 'empty_line'/2), fun 'eof'/2]))(I,D) end, fun(Node, _Idx) -> 
+  p(Input, Index, 'api', fun(I,D) -> (p_seq([p_zero_or_more(fun 'empty_line'/2), p_label('name', p_optional(fun 'api_name'/2)), p_zero_or_more(fun 'empty_line'/2), p_label('description', p_optional(fun 'api_description'/2)), p_zero_or_more(fun 'empty_line'/2), p_label('transactions', fun 'transactions'/2), p_zero_or_more(fun 'empty_line'/2), fun 'eof'/2]))(I,D) end, fun(Node, _Idx) -> 
     Name = proplists:get_value(name, Node),
     Description = proplists:get_value(description, Node),
     Transactions = proplists:get_value(transactions, Node),
@@ -47,13 +47,13 @@ parse(Input) when is_binary(Input) ->
    end).
 
 'api_name'(Input, Index) ->
-  p(Input, Index, 'api_name', fun(I,D) -> (p_seq([p_string(<<"---">>), p_one_or_more(fun 's'/2), p_label('name', fun 'text1'/2), fun 'eolf'/2]))(I,D) end, fun(Node, _Idx) -> 
+  p(Input, Index, 'api_name', fun(I,D) -> (p_seq([p_not(fun 'http_method'/2), p_string(<<"---">>), p_one_or_more(fun 's'/2), p_label('name', fun 'text1'/2), fun 'eolf'/2]))(I,D) end, fun(Node, _Idx) -> 
     Name = proplists:get_value(name, Node),
     re:replace(Name, "\s+---$", "", [{return, binary}])
    end).
 
 'api_description'(Input, Index) ->
-  p(Input, Index, 'api_description', fun(I,D) -> (p_seq([p_string(<<"---">>), p_zero_or_more(fun 's'/2), fun 'eol'/2, p_label('lines', p_zero_or_more(fun 'api_description_line'/2)), p_string(<<"---">>), p_zero_or_more(fun 's'/2), fun 'eolf'/2]))(I,D) end, fun(Node, _Idx) -> 
+  p(Input, Index, 'api_description', fun(I,D) -> (p_seq([p_not(fun 'http_method'/2), p_string(<<"---">>), p_zero_or_more(fun 's'/2), fun 'eol'/2, p_label('lines', p_zero_or_more(fun 'api_description_line'/2)), p_string(<<"---">>), p_zero_or_more(fun 's'/2), fun 'eolf'/2]))(I,D) end, fun(Node, _Idx) -> 
     concatenate_lines(proplists:get_value(lines, Node))
    end).
 

@@ -8,7 +8,6 @@
 /doc/stylesheet.css
 /ebin
 /logs
-/src/katt_blueprint.erl
 *.plt
 .#*
 .eunit
