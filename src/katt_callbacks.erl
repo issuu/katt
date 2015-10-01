@@ -86,6 +86,8 @@ recall(headers, Hdrs0, Params, Callbacks) ->
     }
     || {K, V} <- Hdrs0
   ];
+recall(body, [_Hdrs, null] = Input, _Params, _Callbacks) ->
+  Input;
 recall(body, [Hdrs, Bin], Params, Callbacks) ->
   ExtFun = proplists:get_value(ext, Callbacks),
   Ext = ExtFun(recall_body),
